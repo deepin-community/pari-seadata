@@ -1,0 +1,49 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+# Modified for pari-extra by Bill Allombert <ballombe@debian.org> 2001
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+build-indep:
+build-arch: build-stamp
+build: build-arch build-indep
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	dh_install seadata /usr/share/pari
+	gzip --best debian/pari-seadata/usr/share/pari/seadata/sea0
+	gzip --best debian/pari-seadata/usr/share/pari/seadata/sea???
+
+# Build architecture-independent files here.
+binary-arch: build-arch install
+
+binary-indep: build-indep install
+	dh_testdir
+	dh_testroot
+	dh_installdocs seadata/README
+	dh_installexamples
+	dh_installchangelogs
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build build-arch build-indep clean binary-indep binary-arch binary install
